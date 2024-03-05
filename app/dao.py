@@ -1,7 +1,8 @@
 import hashlib
 
-from app.models import Category, Product, Customer, Seller, Review, Order
+from app.models import Category, Product, Customer, Seller, Review, Order, Reply
 from app import db
+from app import utils
 
 
 def get_user_by_id(user_id, role):
@@ -46,7 +47,20 @@ def save_review(product_id, content, customer_id):
     review = Review(product_id=product_id, review=content, customer_id=customer_id)
     db.session.add(review)
     db.session.commit()
+    create_reply(review.id, utils.get_reply_content(review.review))
+
     return review
+
+
+def create_reply(review_id, content):
+    reply = Reply(reply_to=review_id)
+    reply.content = content
+    db.session.add(reply)
+    db.session.commit()
+
+def get_reviews(product_id):
+    reviews = Review.query.filter(Review.product_id.__eq__(product_id)).all()
+    return reviews
 
 
 def get_orders(customer_id):

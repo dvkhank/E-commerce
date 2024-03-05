@@ -35,7 +35,7 @@ const productList = {
 }
 
 
-function buy(productList) {
+function buy(productList, detail) {
     fetch('/api/order', {
         headers: {
             'Content-Type': "application/json"
@@ -45,7 +45,7 @@ function buy(productList) {
     }).then(res => res.json())
         .then(data => {
             console.log(data.message)
-            location.href = `/order-result?order-id=${data['order-id']}`
+            location.href = `/order-result?order-id=${data['order-id']}&from=${detail}`
         })
         .catch(err => console.log(err))
 }

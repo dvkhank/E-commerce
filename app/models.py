@@ -52,7 +52,7 @@ class Seller(User):
 class Customer(User):
     __tablename__ = 'customer'
     reviews = relationship('Review', backref='customer', lazy=True)
-    orders = relationship('Order', backref='customer', lazy=True)
+    orders = relationship('Order', backref='customer', lazy=False)
 
     def __str__(self):
         return self.last_name + ' ' + self.first_name
@@ -73,7 +73,7 @@ class Product(Base2):
     category_id = Column(Integer, ForeignKey(Category.id), nullable=False)
     seller_id = Column(Integer, ForeignKey(Seller.id), nullable=False)
     order_details = relationship('OrderDetail', backref='product', lazy=True)
-    reviews = relationship('Review', backref='product', lazy=True)
+    reviews = relationship('Review', backref='product', lazy=False)
 
 
 class Order(Base1):
@@ -89,42 +89,47 @@ class OrderDetail(Base1):
     is_review = Column(Boolean, default=False)
 
 
-
 class Review(Base1):
     __tablename__ = 'review'
     review = Column(String(100), nullable=False)
     product_id = Column(Integer, ForeignKey(Product.id), nullable=False)
     customer_id = Column(Integer, ForeignKey(Customer.id), nullable=False)
     create_at = Column(DateTime, default=datetime.now())
+    replies = relationship('Reply', backref='review', lazy=False)
 
 
-class Reply(Review):
+class Reply(Base1):
     __tablename__ = 'reply'
-    reply_to = Column(Integer, ForeignKey(Review.id), default=0)
+    content = Column(String(500), nullable=False)
+    create_at = Column(DateTime, default=datetime.now())
+    reply_to = Column(Integer, ForeignKey(Review.id), nullable=False)
 
 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-        customer3 = Customer(last_name='Nghia', first_name='Nguyen Trong', email='nghia@gmail.com',
-                             phone='0223456789', username='nghia',
-                             password=str(hashlib.md5('nghia'.encode('utf-8')).hexdigest()),
-                             user_role=UserRoleEnum.SHOPPER)
-        review1 = Review(product_id=1, customer_id=1, review="Sản phẩm này tốt quá")
-        review2 = Review(product_id=1, customer_id=2, review="Sản phẩm tệ quá")
-        db.session.add_all([review1, review2])
-
-        seller1 = Seller(last_name='Nguyen', first_name='Van Canh', email='canh@gmail.com', phone='0123456788',
-                         username='canh', password=str(hashlib.md5('canh'.encode('utf-8')).hexdigest()),
-                         user_role=UserRoleEnum.SHOP)
-        product1 = Product(name='Iphone 15 Pro Max', description='Designed by Apple', price=20000000,
-                           image='https://cdn.viettelstore.vn/Images/Product/ProductImage/1349547788.jpeg',
-                           category_id=2, seller_id=1)
-        product2 = Product(name='Ipad gen 9', description='Designed by Apple', price=7000000,
-                           image='https://fptshop.com.vn/Uploads/Originals/2022/12/6/638059452164293984_ipad-gen-9-wifi-4g-dd.jpg',
-                           category_id=3, seller_id=1)
-        db.session.add_all([product1, product2, customer3, seller1])
-        db.session.commit()
-
-
+        # customer1 = Customer(last_name='Khanh', first_name='Duong Van', email='khanh@gmail.com',
+        #                      phone='0213456789', username='khanh',
+        #                      password=str(hashlib.md5('khanh'.encode('utf-8')).hexdigest()),
+        #                      user_role=UserRoleEnum.SHOPPER)
+        # customer3 = Customer(last_name='Nghia', first_name='Nguyen Trong', email='nghia@gmail.com',
+        #                      phone='0223456789', username='nghia',
+        #                      password=str(hashlib.md5('nghia'.encode('utf-8')).hexdigest()),
+        #                      user_role=UserRoleEnum.SHOPPER)
+        # review1 = Review(product_id=1, customer_id=1, review="Sản phẩm này tốt quá")
+        # review2 = Review(product_id=1, customer_id=2, review="Sản phẩm tệ quá")
         # db.session.add_all([review1, review2])
+        #
+        # seller1 = Seller(last_name='Nguyen', first_name='Van Canh', email='canh@gmail.com', phone='0123456788',
+        #                  username='canh', password=str(hashlib.md5('canh'.encode('utf-8')).hexdigest()),
+        #                  user_role=UserRoleEnum.SHOP)
+        # product1 = Product(name='Iphone 15 Pro Max', description='Designed by Apple', price=20000000,
+        #                    image='https://cdn.viettelstore.vn/Images/Product/ProductImage/1349547788.jpeg',
+        #                    category_id=2, seller_id=1)
+        # product2 = Product(name='Ipad gen 9', description='Designed by Apple', price=7000000,
+        #                    image='https://fptshop.com.vn/Uploads/Originals/2022/12/6/638059452164293984_ipad-gen-9-wifi-4g-dd.jpg',
+        #                    category_id=3, seller_id=1)
+        # db.session.add_all([product1, product2, customer3, seller1])
+        # db.session.add_all([customer1])
+        # db.session.commit()
+

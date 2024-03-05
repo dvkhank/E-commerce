@@ -11,9 +11,16 @@ function openModal() {
     }
 }
 
-function showFormReply(formId) {
+function showFormReply(e, formId) {
     const formReply = document.getElementById(formId)
-    formReply.classList.remove('hide')
+    if (formReply.classList.contains('hide')) {
+        e.target.innerText = 'Huỷ'
+        formReply.classList.remove('hide')
+    }
+    else {
+        e.target.innerText = 'Phản hồi'
+        formReply.classList.add('hide')
+    }
 }
 
 function sendReview(productId, customerId, detailId) {

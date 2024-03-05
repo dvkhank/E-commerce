@@ -91,6 +91,16 @@ def buy():
     })
 
 
+@app.route('/api/reply', methods=['post'])
+def rend_reply():
+    review_id = request.args.get('review')
+    product_id = request.args.get('product_id')
+    content = request.form.get('content')
+    dao.create_reply(review_id, content)
+
+    return redirect(url_for('product_detail', product_id=product_id))
+
+
 @app.route('/')
 def index():
     kw = request.args.get('kw')
@@ -132,7 +142,7 @@ def order():
 
     total = sum(map(lambda x: (x['quantity'] * x['price']), details.values()))
 
-    return render_template('order.html', details=details, total=total)
+    return render_template('order.html', details=details, total=total, detail=detail)
 
 
 @app.route('/history')
@@ -154,7 +164,6 @@ def order_result():
     if request.args.get('from') == 'cart' and session.get('cart'):
         del session['cart']
     order_id = request.args.get('order-id')
-    print(order_id)
     dao.pay(order_id)
 
     return render_template('order-result.html')
@@ -189,4 +198,4 @@ def load_user(user_id):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5005)
